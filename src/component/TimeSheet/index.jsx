@@ -6,6 +6,7 @@ import {
   startOfWeek,
   endOfWeek,
   isSameWeek,
+  isToday,
 } from "date-fns";
 import Button from "@mui/material/Button";
 import { Box, TextField, Typography } from "@mui/material";
@@ -202,6 +203,7 @@ const TimeSheet = () => {
               Next
             </Button>
           </Box>
+
           <Box
             sx={{
               display: "flex",
@@ -209,6 +211,7 @@ const TimeSheet = () => {
               alignItems: "center",
               gap: 2,
               my: 4,
+              mt: 1,
             }}
           >
             {weekDays.map((day, index) => {
@@ -216,6 +219,8 @@ const TimeSheet = () => {
               const isDisabled = !isSameWeek(day, new Date(), {
                 weekStartsOn: 1,
               }); // Disable if not current week
+
+              const today = isToday(inputName);
 
               return (
                 <Box
@@ -234,11 +239,18 @@ const TimeSheet = () => {
                       flexDirection: "column",
                       justifyContent: "center",
                       alignItems: "center",
-                      gap: 1,
+                      gap: 0,
+                      p: 2,
+                      px: 3,
+                      my: 3,
+                      background: today ? "#298bed" : "#efefef",
+                      color: today ? "#ffff" : "#000000",
+                      borderRadius: "5px",
                     }}
                   >
                     <span>{format(day, "EEE")}</span>
-                    <span>{format(day, "dd/MM/yy")}</span>
+                    <Typography variant="h4">{format(day, "dd")}</Typography>
+                    <span>{format(day, "LLL yyy")}</span>
                   </Box>
 
                   <TextField
@@ -250,6 +262,7 @@ const TimeSheet = () => {
                     value={timeSheet[inputName]?.time || ""}
                     onChange={handleTimeSheetChange}
                     disabled={isDisabled} // Disable if not in current week
+                    InputLabelProps={{ shrink: true }}
                   />
                   <TextField
                     id={`remark-${inputName}`}
@@ -260,15 +273,18 @@ const TimeSheet = () => {
                     value={timeSheet[inputName]?.remark || ""}
                     onChange={handleRemarkChange}
                     disabled={isDisabled} // Disable if not in current week
-                    helperText={
-                      !isNaN(timeSheet[inputName]?.remark.length) &&
-                      `${250 - timeSheet[inputName]?.remark.length} char left`
-                    }
+                    helperText={`${
+                      !isNaN(timeSheet[inputName]?.remark.length)
+                        ? 250 - timeSheet[inputName]?.remark.length
+                        : 250
+                    } char left`}
+                    InputLabelProps={{ shrink: true }}
                   />
                 </Box>
               );
             })}
           </Box>
+
           <Box
             sx={{
               display: "flex",
